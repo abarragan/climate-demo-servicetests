@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="climate-automation" default="test" basedir=".">
+
+	<property file="build.properties" />
+
+	<taskdef resource="testngtasks" classpath="${dir.libs}/testng-6.8.jar" />
+
+	<target name="test" depends="-compile">
+		<mkdir dir="${dir.test.reports}" />
+		
+		<echo>----------------------------</echo>
+		<property name="classpath" refid="classpath.test" />
+		<echo>Classpath: ${classpath}</echo>
+		<echo>----------------------------</echo>
+		
+		<testng classpathref="classpath.test" haltonfailure="true"
+			haltonskipped="true" outputDir="${dir.test.reports}" haltOnFailure="true" verbose="2">
+			<classfileset dir="${dir.test.compile}" includes="**/*.class" />
+		</testng>
+	</target>
+
+	<target name="-generate.classpath">
+		<path id="classpath.test">
+			<fileset dir="${dir.libs}">
+				<include name="**/*.jar" />
+			</fileset>
+			<pathelement location="${dir.test.compile}" />
+		</path>
+	</target>
+
+	<target name="-compile" depends="clean, -generate.classpath">
+		<mkdir dir="${dir.test.compile}" />
+		<javac srcdir="${dir.test.src}" destdir="${dir.test.compile}"
+			source="${build.source}" includeAntRuntime="false" encoding="UTF-8">
+			<classpath>
+				<path refid="classpath.test" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="clean">
+		<delete dir="${dir.test.compile}" />
+	</target>
+</project>
